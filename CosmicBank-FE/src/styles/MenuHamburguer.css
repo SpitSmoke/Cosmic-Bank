@@ -1,0 +1,49 @@
+/* Para telas menores */
+@media (max-width: 768px) {
+	ul {
+		display: none;
+	}
+	
+	.hamburger {
+		display: block;
+		cursor: pointer;
+		background-color: #fff;
+		width: 30px;
+		height: 3px;
+		position: relative;
+	}
+	
+	.hamburger::before, .hamburger::after {
+		content: '';
+		position: absolute;
+		background-color: #fff;
+		width: 30px;
+		height: 3px;
+	}
+	
+	.hamburger::before {
+		top: -8px;
+	}
+	
+	.hamburger::after {
+		top: 8px;
+	}
+	.menu-open ul {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		top: 60px;
+		right: 20px;
+		background-color: #333;
+		width: 200px;
+		padding: 10px 0;
+	}
+	
+	ul li {
+		margin: 10px 0;
+	}
+	}
+	
+	.menu-open {
+		transform: rotate(90deg)
+	}
