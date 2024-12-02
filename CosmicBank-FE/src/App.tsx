@@ -7,6 +7,7 @@ import Services from './components/services'
 import Footer from './components/footer'
 import Register from './pages/register'
 import Login from './pages/login'
+import Dashboard from './pages/dashboard'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path='/dashboard' element={<Dashboard />} />
         </Routes>
       </main>
       <>
