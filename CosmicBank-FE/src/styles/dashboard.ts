@@ -84,3 +84,22 @@ a {
     }
 }
 `
+
+export const UserInfo = styled.div`
+display: flex;
+align-items: center;
+gap: 15px;
+
+img  {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #e8e8e8;
+}
+
+span {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffd700;
+}
+`

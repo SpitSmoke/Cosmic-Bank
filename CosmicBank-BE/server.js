@@ -3,25 +3,17 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const {Pool} = require('pg')
+const pool = require('./Databases/mysql')
 
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
-const pool = new Pool({
-  user: 'spit_smoke',
-  host: 'localhost',
-  database: 'cosmic_bank',
-  password: 'mafefe4598',
-  port: 5432,
-})
-
 // Middleware 
 app.use(cors())
 app.use(express.json())
 
-// Dados
+// Dados simulados
 const users = [
   {
     email: 'test@example.com',
@@ -34,16 +26,13 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body
 
   try {
-    // Verificando se o usuário existe no banco
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-    const user = result.rows[0]
+    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email])
+    const user = rows[0]
     if (!user) return res.status(400).json({ message: 'Usuário não encontrado' })
 
-    // Comparando a senha informada com a senha armazenada (criptografada)
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return res.status(400).json({ message: 'Senha inválida' })
 
-    // Criando um token JWT
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
     res.json({ message: 'Login bem-sucedido', token })
@@ -53,34 +42,75 @@ app.post('/login', async (req, res) => {
   }
 })
 
-
-
 // Rota de registro
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body
 
-  const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  if (userExists.rows.length > 0 ) {
-    return res.status(400).json({ message: 'Usuário já existe' })
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10)
-
   try {
-    const result = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
+    const [userExists] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (userExists.length > 0) {
+      return res.status(400).json({ message: 'Usuário já existe' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    await pool.query(
+      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
       [name, email, hashedPassword]
     )
 
-    const newUser = result.rows[0]
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
-    const token = jwt.sign({ email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' })
-
-    res.status(201).json({ message: 'Usuário registrado com sucesso', token });
+    res.status(201).json({ message: 'Usuário registrado com sucesso', token })
   } catch (error) {
     console.error('Erro ao registrar usuário:', error.message)
     res.status(500).json({ message: 'Erro ao registrar usuário' })
   }
+})
+
+// Rota para ver o saldo
+app.get('/balance', (req, res) => {
+  const token = req.headers.authorization
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token não fornecido' })
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const email = decoded.email
+
+    const balance = 1000.50 // puxar do banco futuramente
+    res.json({ balance })
+  } catch (error) {
+    console.error('Erro ao verificar token:', error.message)
+    res.status(401).json({ message: 'Token inválido' })
+  }
+})
+
+// rota para informacoes de usuarios
+app.get('/user-info', async (req, res) => {
+  const token = req.headers.authorization?.split('')[1]
+  if (!token) return res.status(401).json({ message: 'Token não fornecido' })
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const result = await pool.query('SELECT name, email FROM users WHERE email = $1', [decoded.email])
+      const user = result.rows[0]
+
+      if (!user) return res.status(404).json({ message: 'Usuário não encontrado' })
+
+        res.json({
+          name: user.name,
+          avatar: user.avatar ||
+          null
+        })
+    } catch (error) {
+      console.error('Erro ao obter informações do usuário:', error.message)
+      res.status(500).json({
+        message: 'Erro ao obter informações do usuário'
+      })
+    }
 })
 
 
