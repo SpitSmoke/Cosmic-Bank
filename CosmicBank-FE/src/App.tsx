@@ -9,6 +9,7 @@ import Register from './pages/register'
 import Login from './pages/login'
 import Dashboard from './pages/dashboard'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import Home from './pages/home'
 
 function App() {
   return (
@@ -18,21 +19,8 @@ function App() {
       <main>
         <Routes>
           <Route
-            path="/"
-            element={
-              <>
-                <section id="home">
-                  <Hero />
-                </section>
-                <section id="about">
-                  <About />
-                </section>
-                <section id="services">
-                  <Services />
-                </section>
-              </>
-            }
-          />
+            path="/home"
+            element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route
