@@ -14,6 +14,7 @@ import { SpanCosmic, SpanBank } from '../styles/HeaderStyles'
 
 const Dashboard = () => {
 const [userInfo, setUserInfo] = useState<{ name: string; avatar: string | null } | null>(null)
+const defaultAvatar = '../Assets/alienProfile.jpg'
 const [balance, setBalance] = useState<number | null>(null)
 const navigate = useNavigate()
 
@@ -31,6 +32,7 @@ useEffect(() => {
         headers: { Authorization: `Bearer ${token}` },
         });
         setUserInfo(userInfoResponse.data)
+        console.log(userInfoResponse.data)
 
         // Requisição para obter o saldo do usuário
         const balanceResponse = await axios.get('http://localhost:5000/balance', {
@@ -40,7 +42,7 @@ useEffect(() => {
 	} catch (error) {
         console.error('Erro ao buscar dados do usuário:', error)
 	}
-    };
+    }
 
     fetchUserInfo()
 }, [navigate])
@@ -63,7 +65,7 @@ return (
 	>
 <UserInfo>
 		<img 
-            src={userInfo?.avatar || 'https://via.placeholder.com/50'} 
+            src={userInfo?.avatar || defaultAvatar} 
             alt="Avatar do Usuário" 
 		/>
 		<span>{userInfo?.name || 'Usuário'}</span>

@@ -4,11 +4,11 @@ export const LoginWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #1b003a, #6a0572);
-  margin: 0; /* Garantir que não haja margem */
-  padding: 0; /* Garantir que não haja padding extra */
-  box-sizing: border-box; /* Garantir que o padding e margin sejam calculados corretamente */
+
+  
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box;  
 `
 
 export const FormContainer = styled.form`
@@ -85,4 +85,26 @@ export const LoginButton = styled.button`
     background: #8a8a8a;
     cursor: not-allowed;
   }
+`
+export const ShowPasswordButton = styled.button`
+position: absolute;
+right: 10px;
+top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+cursor: pointer;
+font-size: 14px;
+`
+export const ContainerDiv = styled.div`
+position: relative ;
+width: 100%;
+`
+export const ContainerRememberMe = styled.div`
+display: flex;
+margin-top: 10px;
+align-items: center;
+`
+export const InputRememberMe = styled.input`
+margin-right: 5px;
 `
